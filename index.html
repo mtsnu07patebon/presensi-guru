@@ -306,19 +306,35 @@
       { nip: '199209182019032004', nama: 'Dewi Kartika, S.Pd.', mapel: 'Bahasa Inggris' }
     ];
 
-    let rekapPresensi = JSON.parse(localStorage.getItem('edu_rekap')) || [];
+    let rekapPresensi = []; // Kosongkan, karena data ditarik dari server online
     let isFotoCaptured = false; // Flag untuk mengecek apakah foto sudah diambil
 
     // --- INISIALISASI ---
-    window.onload = function() {
+    window.onload = async function() {
       lucide.createIcons();
       updateClock();
       setInterval(updateClock, 1000);
       renderGuru();
-      renderRekap();
+      
+      // Ambil data rekap dari Google Spreadsheet secara online
+      await ambilRekapDariServer();
+      
       updateFormMode();
-      updateStats();
       cekValidasiForm();
+    };
+
+    // --- FUNGSI AMBIL DATA DARI GOOGLE SPREADSHEET ---
+    async function ambilRekapDariServer() {
+      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyp6Y8zDiwkFNpjDyxazRiBBqCctrDb6HzxpadAbh3oF3K0klApvNlbqpTNfSiyH9jy/exec"; // Gunakan URL Web App Anda
+      try {
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+        rekapPresensi = data; // Masukkan data dari server ke variabel rekap
+        renderRekap();
+        updateStats();
+      } catch (err) {
+        console.error('Gagal memuat rekap online:', err);
+      }
     };
 
     // --- UPDATE REAL-TIME CLOCK & LOGIKA TERLAMBAT ---
