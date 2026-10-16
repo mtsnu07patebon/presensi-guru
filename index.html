@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Presensi Guru - Presensi Online</title>
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-emerald-50/40 text-slate-800 min-h-screen">
+
+  <!-- TOP HEADER -->
+  <header class="max-w-7xl mx-auto px-4 pt-6 pb-2 flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- LOGO & SCHOOL -->
+    <div class="flex items-center gap-3">
+      <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md">
+        <i data-lucide="user-check" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          PresensiOnline
+        </h1>
+        <p class="text-xs text-slate-500 font-medium">MTs NU 07 Patebon</p>
+      </div>
+    </div>
+
+    <!-- DATE & TIME BADGE -->
+    <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-full shadow-sm border border-emerald-100 text-xs font-semibold text-slate-600">
+      <div class="flex items-center gap-1.5 border-r border-slate-200 pr-3">
+        <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+        <span id="header-date">Selasa, 13 Oktober 2026</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <i data-lucide="clock" class="w-4 h-4 text-emerald-600"></i>
+        <span id="header-time" class="text-emerald-700 font-bold">12:20:13 WIB</span>
+      </div>
+    </div>
+
+    <!-- ADMIN PROFILE -->
+    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100">
+      <div class="text-right">
+        <p class="text-xs font-bold text-slate-700">Administrator</p>
+        <p class="text-[10px] text-emerald-600 font-medium">Petugas Piket / Admin</p>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
+        <i data-lucide="user" class="w-5 h-5"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- CARDS STATISTIK -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Jumlah Tenaga Pendidik & Kependidikan -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-start">
+        <div>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Jumlah Tenaga Pendidik & Kependidikan</p>
+          <h3 id="stat-total-guru" class="text-3xl font-extrabold text-slate-800 my-1">0</h3>
+          <p class="text-xs text-slate-400 flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5 text-blue-500"></i> Tenaga Pendidik & Kependidikan terdaftar</p>
+        </div>
+        <div class="bg-blue-50 text-blue-600 p-3 rounded-xl">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Hadir Hari Ini -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-start">
+        <div>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">HADIR HARI INI</p>
+          <h3 id="stat-hadir" class="text-3xl font-extrabold text-emerald-600 my-1">0</h3>
+          <p class="text-xs text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Tepat waktu</p>
+        </div>
+        <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl">
+          <i data-lucide="user-check" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Terlambat -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-start">
+        <div>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">TERLAMBAT</p>
+          <h3 id="stat-terlambat" class="text-3xl font-extrabold text-amber-500 my-1">0</h3>
+          <p class="text-xs text-amber-600 font-medium flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i> &gt; 07:15 WIB</p>
+        </div>
+        <div class="bg-amber-50 text-amber-500 p-3 rounded-xl">
+          <i data-lucide="user-x" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Izin / Sakit -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-start">
+        <div>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">IZIN / SAKIT</p>
+          <h3 id="stat-izin" class="text-3xl font-extrabold text-rose-500 my-1">0</h3>
+          <p class="text-xs text-slate-400 flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Berhalangan</p>
+        </div>
+        <div class="bg-rose-50 text-rose-500 p-3 rounded-xl">
+          <i data-lucide="user-minus" class="w-6 h-6"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="flex border-b border-slate-200 mb-6 gap-6 font-semibold text-sm">
+      <button onclick="switchTab('presensi')" id="tab-btn-presensi" class="pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2">
+        <i data-lucide="edit-3" class="w-4 h-4"></i> Presensi Hari Ini
+      </button>
+      <button onclick="switchTab('rekap')" id="tab-btn-rekap" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
+        <i data-lucide="table" class="w-4 h-4"></i> Tabel Rekap Presensi
+      </button>
+      <button onclick="switchTab('guru')" id="tab-btn-guru" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
+        <i data-lucide="users" class="w-4 h-4"></i> Data Guru
+      </button>
+    </div>
+
+    <!-- CONTENT 1: FORM PRESENSI -->
+    <div id="tab-presensi" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- FORMULIR -->
+      <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex justify-between items-center mb-5">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800">Formulir Presensi Guru</h2>
+            <p class="text-xs text-slate-400">Isi data kehadiran guru.</p>
+          </div>
+          <span class="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1 rounded-full">Sistem Aktif</span>
+        </div>
+
+        <form id="form-presensi" onsubmit="simpanPresensi(event)" class="space-y-4">
+          
+          <!-- OPSI: KEDATANGAN / KEPULANGAN -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">JENIS PRESENSI <span class="text-rose-500">*</span></label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex items-center gap-3 hover:bg-emerald-50/50 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/80 transition-all">
+                <input type="radio" name="jenis_presensi" value="Kedatangan" checked onchange="updateFormMode()" class="accent-emerald-600 w-4 h-4">
+                <div>
+                  <p class="text-xs font-bold text-slate-800">Presensi Keberangkatan</p>
+                  <p class="text-[10px] text-slate-400">Masuk Sekolah</p>
+                </div>
+              </label>
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-3 flex items-center gap-3 hover:bg-emerald-50/50 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/80 transition-all">
+                <input type="radio" name="jenis_presensi" value="Kepulangan" onchange="updateFormMode()" class="accent-emerald-600 w-4 h-4">
+                <div>
+                  <p class="text-xs font-bold text-slate-800">Presensi Kepulangan</p>
+                  <p class="text-[10px] text-slate-400">Pulang Sekolah</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- PILIH GURU -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">PILIH GURU <span class="text-rose-500">*</span></label>
+            <select id="select-guru" onchange="autoFillGuru(); cekValidasiForm();" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-600">
+              <option value="">-- Pilih Nama Guru --</option>
+            </select>
+          </div>
+
+          <!-- MAPEL / JABATAN & STATUS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">JABATAN</label>
+              <input type="text" id="mapel-guru" readonly placeholder="Otomatis terisi..." class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">STATUS PRESENSI <span class="text-rose-500">*</span></label>
+              <select id="status-presensi" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-600 font-medium">
+                <option value="Hadir (Tepat Waktu)">Hadir (Tepat Waktu)</option>
+                <option value="Terlambat">Terlambat (&gt; 07:15 WIB)</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- JAM MASUK & KELUAR -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">JAM MASUK</label>
+              <input type="text" id="jam-masuk" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-600 font-semibold outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">JAM KELUAR / PULANG</label>
+              <input type="text" id="jam-keluar" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-600 font-semibold outline-none">
+            </div>
+          </div>
+
+          <!-- TOMBOL SIMPAN (Disabled secara default) -->
+          <button type="submit" id="btn-submit" disabled class="w-full bg-slate-300 text-slate-500 font-bold py-3 rounded-xl shadow-none transition-all flex items-center justify-center gap-2 cursor-not-allowed">
+            <i data-lucide="check-circle" class="w-5 h-5"></i> Simpan Data Presensi
+          </button>
+        </form>
+      </div>
+
+      <!-- KAMERA & VERIFIKASI FOTO -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="camera" class="w-5 h-5 text-emerald-600"></i> Verifikasi Foto / Kamera <span class="text-rose-500">*</span>
+          </h2>
+          <p class="text-xs text-slate-400 mb-4">Foto wajib diambil sebelum data dapat dikirim.</p>
+
+          <div class="relative bg-slate-900 rounded-2xl h-64 overflow-hidden flex items-center justify-center text-slate-400 text-xs">
+            <video id="webcam" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+            <canvas id="canvas" class="hidden"></canvas>
+            <img id="captured-image" class="w-full h-full object-cover hidden" />
+            
+            <div id="camera-placeholder" class="text-center">
+              <i data-lucide="video-off" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
+              <p>Kamera Belum Aktif</p>
+            </div>
+          </div>
+          <p id="foto-status-text" class="text-[11px] font-semibold text-rose-500 mt-2 text-center">⚠️ Foto belum diambil</p>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button type="button" onclick="startCamera()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="video" class="w-4 h-4"></i> Buka Kamera
+          </button>
+          <button type="button" onclick="takeSnapshot()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="aperture" class="w-4 h-4"></i> Ambil Foto
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTENT 2: REKAP PRESENSI -->
+    <div id="tab-rekap" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Tabel Rekapitulasi Presensi Hari Ini</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 font-bold uppercase border-b border-slate-200">
+              <th class="p-3">Tanggal</th>
+              <th class="p-3">Jenis</th>
+              <th class="p-3">NIP</th>
+              <th class="p-3">Nama Guru</th>
+              <th class="p-3">Jam Masuk</th>
+              <th class="p-3">Jam Pulang</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-rekap" class="divide-y divide-slate-100 text-slate-700 font-medium">
+            <!-- Data dimasukkan via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTENT 3: KELOLA DATA GURU (ADMIN) -->
+    <div id="tab-guru" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">Kelola Data Guru (Admin)</h2>
+          <p class="text-xs text-slate-400">MTs NU 07 Patebon.</p>
+        </div>
+      </div>
+
+      <!-- FORM TAMBAH GURU -->
+      <form onsubmit="tambahGuru(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input type="text" id="add-nip" placeholder="NIP Guru" required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+        <input type="text" id="add-nama" placeholder="Nama Lengkap & Gelar" required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+        <div class="flex gap-2">
+          <input type="text" id="add-mapel" placeholder="Mata Pelajaran / Jabatan" required class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah
+          </button>
+        </div>
+      </form>
+
+      <!-- TABEL DATA GURU -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 font-bold uppercase border-b border-slate-200">
+              <th class="p-3">NIP</th>
+              <th class="p-3">Nama Guru</th>
+              <th class="p-3">Jabatan</th>
+              <th class="p-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-guru" class="divide-y divide-slate-100 text-slate-700 font-medium">
+            <!-- Data Guru dimasukkan via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- DATA DEFAULT INITIAL (LOCAL STORAGE) ---
+    let dataGuru = JSON.parse(localStorage.getItem('edu_guru')) || [
+      { nip: '198203152009021001', nama: 'Budi Santoso, S.Pd.', mapel: 'Matematika' },
+      { nip: '198507202010012003', nama: 'Siti Aminah, M.Pd.', mapel: 'Bahasa Indonesia' },
+      { nip: '199001122014031002', nama: 'Eko Prasetyo, S.T.', mapel: 'Informatika' },
+      { nip: '197805042005012001', nama: 'Rina Wijaya, S.Si.', mapel: 'Fisika' },
+      { nip: '199209182019032004', nama: 'Dewi Kartika, S.Pd.', mapel: 'Bahasa Inggris' }
+    ];
+
+    let rekapPresensi = JSON.parse(localStorage.getItem('edu_rekap')) || [];
+    let isFotoCaptured = false; // Flag untuk mengecek apakah foto sudah diambil
+
+    // --- INISIALISASI ---
+    window.onload = function() {
+      lucide.createIcons();
+      updateClock();
+      setInterval(updateClock, 1000);
+      renderGuru();
+      renderRekap();
+      updateFormMode();
+      updateStats();
+      cekValidasiForm();
+    };
+
+    // --- UPDATE REAL-TIME CLOCK & LOGIKA TERLAMBAT ---
+    function updateClock() {
+      const now = new Date();
+      const optionsDate = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const dateStr = now.toLocaleDateString('id-ID', optionsDate);
+      
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const timeStr = `${hours}.${minutes}.${seconds} WIB`;
+
+      document.getElementById('header-date').innerText = dateStr;
+      document.getElementById('header-time').innerText = timeStr;
+
+      updateFormMode();
+    }
+
+    // --- MANAJEMEN MODE PRESENSI (KEBERANGKATAN / KEPULANGAN & AUTO TERLAMBAT) ---
+    function updateFormMode() {
+      const jenis = document.querySelector('input[name="jenis_presensi"]:checked').value;
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const timeFormatted = `${String(currentHours).padStart(2, '0')}:${String(currentMinutes).padStart(2, '0')}`;
+
+      const statusSelect = document.getElementById('status-presensi');
+      const inputMasuk = document.getElementById('jam-masuk');
+      const inputKeluar = document.getElementById('jam-keluar');
+
+      if (jenis === 'Kedatangan') {
+        inputMasuk.value = timeFormatted + " WIB";
+        inputKeluar.value = "-";
+
+        if (currentHours > 7 || (currentHours === 7 && currentMinutes > 15)) {
+          statusSelect.value = "Terlambat";
+        } else {
+          statusSelect.value = "Hadir (Tepat Waktu)";
+        }
+      } else {
+        inputMasuk.value = "-";
+        inputKeluar.value = timeFormatted + " WIB";
+        statusSelect.value = "Hadir (Tepat Waktu)";
+      }
+    }
+
+    // --- AUTOFILL DATA GURU ---
+    function autoFillGuru() {
+      const selectedNip = document.getElementById('select-guru').value;
+      const guru = dataGuru.find(g => g.nip === selectedNip);
+      document.getElementById('mapel-guru').value = guru ? guru.mapel : '';
+    }
+
+    // --- VALIDASI TOMBOL KIRIM / SIMPAN ---
+    function cekValidasiForm() {
+      const selectGuru = document.getElementById('select-guru').value;
+      const btnSubmit = document.getElementById('btn-submit');
+
+      // Syarat: Guru sudah dipilih DAN foto sudah diambil
+      if (selectGuru !== "" && isFotoCaptured) {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed', 'shadow-none');
+        btnSubmit.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'text-white', 'shadow-md');
+      } else {
+        btnSubmit.disabled = true;
+        btnSubmit.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed', 'shadow-none');
+        btnSubmit.classList.remove('bg-emerald-600', 'hover:bg-emerald-700', 'text-white', 'shadow-md');
+      }
+    }
+
+    // --- SIMPAN PRESENSI KE GOOGLE SPREADSHEET ---
+    async function simpanPresensi(event) {
+      event.preventDefault();
+      const nip = document.getElementById('select-guru').value;
+      const guru = dataGuru.find(g => g.nip === nip);
+      const jenis = document.querySelector('input[name="jenis_presensi"]:checked').value;
+      const status = document.getElementById('status-presensi').value;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('id-ID');
+      const timeFormatted = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      // Ambil data gambar dari elemen img hasil tangkapan kamera
+      const capturedImg = document.getElementById('captured-image');
+      const fotoBase64 = capturedImg.src;
+
+      if (!guru) return alert('Pilih guru terlebih dahulu!');
+      if (!isFotoCaptured) return alert('Foto wajib diambil terlebih dahulu!');
+
+      // Tampilkan indikator loading / proses pengiriman
+      const btnSubmit = document.getElementById('btn-submit');
+      const originalText = btnSubmit.innerHTML;
+      btnSubmit.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Menyimpan ke Spreadsheet...`;
+      btnSubmit.disabled = true;
+
+      // URL Web App dari Google Apps Script Anda
+      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyp6Y8zDiwkFNpjDyxazRiBBqCctrDb6HzxpadAbh3oF3K0klApvNlbqpTNfSiyH9jy/exec"; 
+
+      const payload = {
+        tanggal: dateStr,
+        jenis: jenis,
+        nip: guru.nip,
+        nama: guru.nama,
+        jamMasuk: jenis === 'Kedatangan' ? timeFormatted : '-',
+        jamKeluar: jenis === 'Kepulangan' ? timeFormatted : '-',
+        status: status,
+        foto: fotoBase64
+      };
+
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Diperlukan untuk Google Apps Script web app post
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const dataBaru = {
+          tanggal: dateStr,
+          jenis: jenis,
+          nip: guru.nip,
+          nama: guru.nama,
+          jamMasuk: jenis === 'Kedatangan' ? timeFormatted : '-',
+          jamKeluar: jenis === 'Kepulangan' ? timeFormatted : '-',
+          status: status
+        };
+
+        rekapPresensi.unshift(dataBaru);
+        localStorage.setItem('edu_rekap', JSON.stringify(rekapPresensi));
+        
+        alert(`Presensi ${jenis} berhasil disimpan ke Spreadsheet & sistem untuk ${guru.nama}!`);
+        renderRekap();
+        updateStats();
+        
+        // Reset form & status foto
+        document.getElementById('form-presensi').reset();
+        isFotoCaptured = false;
+        capturedImg.classList.add('hidden');
+        document.getElementById('camera-placeholder').classList.remove('hidden');
+        document.getElementById('foto-status-text').innerText = "⚠️ Foto belum diambil";
+        document.getElementById('foto-status-text').className = "text-[11px] font-semibold text-rose-500 mt-2 text-center";
+        
+        updateFormMode();
+        cekValidasiForm();
+
+      } catch (err) {
+        alert('Gagal mengirim data ke Spreadsheet: ' + err.message);
+      } finally {
+        btnSubmit.innerHTML = originalText;
+        lucide.createIcons();
+        cekValidasiForm();
+      }
+    }
+
+    // --- RENDER TABEL REKAP & STATISTIK (DIFILTER HANYA UNTUK HARI INI) ---
+function renderRekap() {
+  const tbody = document.getElementById('tbody-rekap');
+  tbody.innerHTML = '';
+
+  // Ambil tanggal hari ini dalam format String (sama seperti saat simpanPresensi)
+  const todayStr = new Date().toLocaleDateString('id-ID');
+
+  // Filter data rekap presensi hanya untuk tanggal hari ini
+  const rekapHariIni = rekapPresensi.filter(item => item.tanggal === todayStr);
+
+  if (rekapHariIni.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada data presensi hari ini.</td></tr>`;
+    return;
+  }
+
+  rekapHariIni.forEach(item => {
+    let badgeColor = "bg-emerald-100 text-emerald-700";
+    if (item.status === 'Terlambat') badgeColor = "bg-amber-100 text-amber-700";
+    if (item.status === 'Izin' || item.status === 'Sakit') badgeColor = "bg-rose-100 text-rose-700";
+
+    tbody.innerHTML += `
+      <tr class="hover:bg-slate-50">
+        <td class="p-3">${item.tanggal}</td>
+        <td class="p-3 font-semibold text-slate-600">${item.jenis}</td>
+        <td class="p-3">${item.nip}</td>
+        <td class="p-3 font-bold text-slate-800">${item.nama}</td>
+        <td class="p-3">${item.jamMasuk}</td>
+        <td class="p-3">${item.jamKeluar}</td>
+        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${badgeColor}">${item.status}</span></td>
+      </tr>
+    `;
+  });
+}
+
+function updateStats() {
+  document.getElementById('stat-total-guru').innerText = dataGuru.length;
+  
+  // Ambil tanggal hari ini
+  const todayStr = new Date().toLocaleDateString('id-ID');
+  
+  // Hitung statistik hanya dari data presensi hari ini
+  const rekapHariIni = rekapPresensi.filter(r => r.tanggal === todayStr);
+  
+  const hadir = rekapHariIni.filter(r => r.status.includes('Hadir')).length;
+  const terlambat = rekapHariIni.filter(r => r.status === 'Terlambat').length;
+  const izin = rekapHariIni.filter(r => r.status === 'Izin' || r.status === 'Sakit').length;
+
+  document.getElementById('stat-hadir').innerText = hadir;
+  document.getElementById('stat-terlambat').innerText = terlambat;
+  document.getElementById('stat-izin').innerText = izin;
+}
+
+    // --- KELOLA DATA GURU (ADMIN) ---
+    function renderGuru() {
+      const selectGuru = document.getElementById('select-guru');
+      const tbodyGuru = document.getElementById('tbody-guru');
+
+      const currentSelected = selectGuru.value; // Simpan nilai terpilih sebelumnya
+      selectGuru.innerHTML = '<option value="">-- Pilih Nama Guru / NIP --</option>';
+      tbodyGuru.innerHTML = '';
+
+      dataGuru.forEach((g, index) => {
+        selectGuru.innerHTML += `<option value="${g.nip}">${g.nama} (${g.nip})</option>`;
+
+        tbodyGuru.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-mono text-slate-500">${g.nip}</td>
+            <td class="p-3 font-bold text-slate-800">${g.nama}</td>
+            <td class="p-3">${g.mapel}</td>
+            <td class="p-3 text-center">
+              <button onclick="hapusGuru(${index})" class="text-rose-500 hover:text-rose-700 font-bold p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      selectGuru.value = currentSelected; // Kembalikan pilihan jika ada
+      localStorage.setItem('edu_guru', JSON.stringify(dataGuru));
+      updateStats();
+      lucide.createIcons();
+    }
+
+    function tambahGuru(e) {
+      e.preventDefault();
+      const nip = document.getElementById('add-nip').value;
+      const nama = document.getElementById('add-nama').value;
+      const mapel = document.getElementById('add-mapel').value;
+
+      dataGuru.push({ nip, nama, mapel });
+      renderGuru();
+
+      document.getElementById('add-nip').value = '';
+      document.getElementById('add-nama').value = '';
+      document.getElementById('add-mapel').value = '';
+      alert('Guru baru berhasil ditambahkan!');
+    }
+
+    function hapusGuru(index) {
+      if (confirm('Yakin ingin menghapus guru ini?')) {
+        dataGuru.splice(index, 1);
+        renderGuru();
+      }
+    }
+
+    // --- TAB SWITCHING ---
+    function switchTab(tabName) {
+      document.getElementById('tab-presensi').classList.add('hidden');
+      document.getElementById('tab-rekap').classList.add('hidden');
+      document.getElementById('tab-guru').classList.add('hidden');
+
+      document.getElementById('tab-btn-presensi').className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+      document.getElementById('tab-btn-rekap').className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+      document.getElementById('tab-btn-guru').className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tabName}`).className = "pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2";
+    }
+
+    // --- FITUR KAMERA WEBCAM ---
+    async function startCamera() {
+      const video = document.getElementById('webcam');
+      const placeholder = document.getElementById('camera-placeholder');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      } catch (err) {
+        alert('Tidak dapat mengakses kamera: ' + err.message);
+      }
+    }
+
+    function takeSnapshot() {
+      const video = document.getElementById('webcam');
+      const canvas = document.getElementById('canvas');
+      const img = document.getElementById('captured-image');
+      const statusText = document.getElementById('foto-status-text');
+
+      if (video.classList.contains('hidden')) {
+        alert('Buka kamera terlebih dahulu!');
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      img.src = canvas.toDataURL('image/png');
+      img.classList.remove('hidden');
+      video.classList.add('hidden');
+
+      // Set status foto menjadi true dan update UI
+      isFotoCaptured = true;
+      statusText.innerText = "✅ Foto berhasil diambil";
+      statusText.className = "text-[11px] font-semibold text-emerald-600 mt-2 text-center";
+
+      // Cek validasi tombol kirim
+      cekValidasiForm();
+    }
+  </script>
+</body>
+</html>
